@@ -1,0 +1,37 @@
+def accept(automat, starea_initiala, starea_finala, cuvant):
+    starea_curenta = starea_initiala
+    for litera in cuvant:
+        if automat.get(starea_curenta, {}).get(litera) is None:
+            return False
+        starea_curenta = automat[starea_curenta][litera]
+    return starea_curenta == starea_finala
+
+def afisare_drum(automat, starea_initiala, cuvant):
+    starea_curenta = starea_initiala
+    drum = [starea_curenta]
+    for litera in cuvant:
+        starea_curenta = automat[starea_curenta][litera]
+        drum.append(litera)
+        drum.append(starea_curenta)
+    return drum
+
+# Citirea automatului din fisier
+automat = {}
+with open("automat.txt") as f:
+    numar_stari, numar_tranzitii, starea_initiala, starea_finala = map(int, f.readline().strip().split())
+    for i in range(numar_tranzitii):
+        starea_start, litera, starea_finala = f.readline().strip().split()
+        starea_start, starea_finala = int(starea_start), int(starea_finala)
+        if starea_start not in automat:
+            automat[starea_start] = {}
+        automat[starea_start][litera] = starea_finala
+
+# Citirea cuvantului
+cuvant = input("Introduceti cuvantul: ")
+
+# Verificarea daca cuvantul este acceptat de automat
+if accept(automat, starea_initiala, starea_finala, cuvant):
+    print("Cuvantul '{}' este acceptat.".format(cuvant))
+    print("Drumul folosit pentru acceptare: {}".format(" ".join(map(str, afisare_drum(automat, starea_initiala, cuvant)))))
+else:
+    print("Cuvantul '{}' nu este acceptat.".format(cuvant))
